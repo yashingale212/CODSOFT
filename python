@@ -1,35 +1,65 @@
+import json
 
-print("Welcome to Simple Calculator")
-print("Operations Available:")
-print("1. Addition (+)")
-print("2. Subtraction (-)")
-print("3. Multiplication (*)")
-print("4. Division (/)")
+FILE = "tasks.json"
 
-# Taking inputs
-num1 = float(input("Enter first number: "))
-num2 = float(input("Enter second number: "))
-operation = input("Choose operation (+, -, *, /): ")
+# Load tasks
+def load_tasks():
+    try:
+        with open(FILE, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
-# Performing calculation
-if operation == "+":
-    result = num1 + num2
-    print(f"The result of {num1} + {num2} = {result}")
+# Save tasks
+def save_tasks(tasks):
+    with open(FILE, "w") as f:
+        json.dump(tasks, f, indent=4)
 
-elif operation == "-":
-    result = num1 - num2
-    print(f"The result of {num1} - {num2} = {result}")
-
-elif operation == "*":
-    result = num1 * num2
-    print(f"The result of {num1} * {num2} = {result}")
-
-elif operation == "/":
-    if num2 != 0:
-        result = num1 / num2
-        print(f"The result of {num1} / {num2} = {result}")
+# Show tasks
+def show_tasks(tasks):
+    if not tasks:
+        print("✅ No tasks found!")
     else:
-        print("Error: Division by zero is not allowed!")
+        for i, task in enumerate(tasks, 1):
+            status = "✔" if task["done"] else "✘"
+            print(f"{i}. {task['title']} [{status}]")
+#Main Prog
+def main():
+    tasks = load_tasks()
+    while True:
+        print("\n--- TO-DO LIST ---")
+        print("1. View Tasks")
+        print("2. Add Task")
+        print("3. Mark Task Completed")
+        print("4. Delete Task")
+        print("5. Exit")
 
-else:
-    print("Invalid operation choice! Please select +, -, * or /")
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            show_tasks(tasks)
+        elif choice == "2":
+            title = input("Enter task title: ")
+            tasks.append({"title": title, "done": False})
+            save_tasks(tasks)
+        elif choice == "3":
+            show_tasks(tasks)
+            num = int(input("Enter task number to mark completed: ")) - 1
+            if 0 <= num < len(tasks):
+                tasks[num]["done"] = True
+                save_tasks(tasks)
+        elif choice == "4":
+            show_tasks(tasks)
+            num = int(input("Enter task number to delete: ")) - 1
+            if 0 <= num < len(tasks):
+                tasks.pop(num)
+                save_tasks(tasks)
+        elif choice == "5":
+            break
+        else:
+            print("❌ Invalid choice!")
+
+if __name__ == "__main__":
+    main()
+
+    #Codsoft / Python / Task 1
